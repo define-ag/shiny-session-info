@@ -108,7 +108,7 @@ server <- function(input, output, session) {
     })
   
     output$environment <- renderJsonedit({
-      jsonedit(as.list(Sys.getenv()), mode = 'view', modes = list('view))
+      jsonedit(as.list(Sys.getenv()), mode = 'view', modes = list('view'))
     })
 }
 
