@@ -54,7 +54,9 @@ ui <- function(req) {fluidPage(
               safe_list(req)
               , mode = 'view'
               , modes = list('view')
-              )
+              ),
+            h2("Environment Variables"),
+            textOutput("environment")
         )
     )
 )}
@@ -103,6 +105,10 @@ server <- function(input, output, session) {
     # Values from cdata returned as text
     output$clientdataText <- renderJsonedit({
         jsonedit(as.list(cdata), mode = 'view', modes = list('view'))
+    })
+  
+    output$environment <- renderText({
+      Sys.getenv()
     })
 }
 
