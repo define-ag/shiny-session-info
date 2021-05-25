@@ -31,7 +31,7 @@ safe_list <- function(.list) {
 }
 
 ui <- function(req) {fluidPage(
-    
+    tags$head(includeScript('www/iframeResizer.contentWindow.min.js')),
     titlePanel("Shiny Session Info"),
     
     sidebarLayout(
