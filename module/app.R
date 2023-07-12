@@ -57,7 +57,9 @@ sessionInfoModuleUI <- function(id, req) {
               safe_list(req)
               , mode = 'view'
               , modes = list('view')
-              )
+              ),
+            h2("Environment Variables"),
+            jsoneditOutput("environment")
         )
     )
 )
