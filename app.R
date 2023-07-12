@@ -1,5 +1,3 @@
-library(shiny)
-library(listviewer)
 
 safe_list <- function(.list) {
   tryCatch({
@@ -31,8 +29,8 @@ safe_list <- function(.list) {
 }
 
 ui <- function(req) {fluidPage(
-    tags$head(includeScript('www/iframeResizer.contentWindow.min.js')),
-    titlePanel("Shiny Session Info"),
+    
+    titlePanel("System and Shiny info"),
     
     sidebarLayout(
         sidebarPanel(
@@ -45,23 +43,38 @@ ui <- function(req) {fluidPage(
         ),
         
         mainPanel(
-            h2("session$clientData"),
+            h2("Sys.info()"),
+            tableOutput("sys_info"),
+            h2("Sys.getenv(names = TRUE)"),
+            tableOutput("system_env"),
+            h2("Shiny: session$clientData"),
             jsoneditOutput("clientdataText"),
-            h2("session"),
+            h2("Shiny: session"),
             jsoneditOutput("sessionInfo"),
-            h2("UI req object"),
+            h2("Shiny: UI req object"),
             jsonedit(
               safe_list(req)
               , mode = 'view'
               , modes = list('view')
-              ),
-            h2("Environment Variables"),
-            jsoneditOutput("environment")
+              )
         )
     )
 )}
 
 server <- function(input, output, session) {
+    
+    output$sys_info <- renderTable({
+      dat <- as.data.frame(as.list(Sys.info()))
+      dat <- as.data.frame(cbind(Name = names(dat), t(dat)))
+      dat$Value <- dat$V2
+      dat$V2 <- NULL
+      dat
+    })
+    
+    output$system_env <- renderTable({ 
+      s <- Sys.getenv(names = TRUE)
+      data.frame(name = names(s), value = as.character(s))
+    })
     
     clean_environ <- function(environ){
         if (is.environment(environ)) {
@@ -76,7 +89,6 @@ server <- function(input, output, session) {
     # Store in a convenience variable
     cdata <- session$clientData
     
-    
     output$sessionInfo <- renderJsonedit({
         tryCatch({
           calt <- as.list(session)
@@ -90,7 +102,7 @@ server <- function(input, output, session) {
           calt_final <- calt_clean_2
           calt_names <- names(calt_final)
           
-          print(lapply(calt_final, typeof))
+          # print(lapply(calt_final, typeof))
         },
     error = function(e) {
       message(e)
@@ -110,6 +122,8 @@ server <- function(input, output, session) {
     output$environment <- renderJsonedit({
       jsonedit(as.list(Sys.getenv()), mode = 'view', modes = list('view'))
     })
+
+    
 }
 
 # Run the application 
